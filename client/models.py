@@ -25,4 +25,8 @@ class Vehicles(models.Model):
     vehicle_type = models.CharField(max_length=65)
     seats = models.IntegerField()
     color = models.CharField(max_length=65)
+
+class Recordings(models.Model):
+    recording_name = models.CharField(max_length=150)
+    recording_location = models.CharField(max_length=150)
     

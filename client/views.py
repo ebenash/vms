@@ -16,16 +16,17 @@ def user_login(request):
     username = request.POST["username"]
     password = request.POST["password"]
     if username is None:
-        return render('client/login.html',{'message':'Welcome'})
+        return render('client/login.html',{"message":"Welcome"})
 
     user = authenticate(request,username=username,password=password)
+    
     if user is not None:
         login(request,user)
         return HttpResponseRedirect(reverse('dashboard'))
     else:
-        return render('client/login.html',{'message':'Invalid Credentials'})
+        return render(request,'client/login.html',{"message":"Invalid Credentials"})
 
 def user_logout(request):
     logout(request)
-    return render('client/login.html',{'message':'Successfully Logged out'})
+    return render(request,'client/login.html',{"message":"Successfully Logged out"})
 
