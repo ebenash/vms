@@ -30,3 +30,43 @@ def user_logout(request):
     logout(request)
     return render(request,'client/login.html',{"message":"Successfully Logged out"})
 
+def vehicles(request):
+    if not request.user.is_authenticated:
+        return render(request,'client/login.html',{"message":"Please Login to Continue"})
+    data = {
+        "user" : request.user
+    }
+    return render(request,'client/vehicles.html',data)
+
+def add_vehicle(request):
+    if not request.user.is_authenticated:
+        return render(request,'client/login.html',{"message":"Please Login to Continue"})
+    data = {
+        "user" : request.user
+    }
+    return render(request,'client/add_vehicle.html',data)
+
+def locations(request):
+    if not request.user.is_authenticated:
+        return render(request,'client/login.html',{"message":"Please Login to Continue"})
+    data = {
+        "user" : request.user
+    }
+    return render(request,'client/map.html',data)
+
+def live_stream(request):
+    if not request.user.is_authenticated:
+        return render(request,'client/login.html',{"message":"Please Login to Continue"})
+    data = {
+        "user" : request.user
+    }
+    return render(request,'client/live_stream.html',data)
+
+def recordings(request):
+    if not request.user.is_authenticated:
+        return render(request,'client/login.html',{"message":"Please Login to Continue"})
+    data = {
+        "user" : request.user
+    }
+    return render(request,'client/recordings.html',data)
+
