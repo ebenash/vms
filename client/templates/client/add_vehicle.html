@@ -15,7 +15,7 @@
 	<!-- begin row -->
 	<div class="row">
 		<!-- begin col-6 -->
-		<div class="col-md-6">
+		<div class="col-lg-12">
 			<!-- begin panel -->
 			<div class="panel panel-inverse" data-sortable-id="form-validation-1">
 				<div class="panel-heading">
@@ -25,50 +25,64 @@
 						<a href="javascript:;" class="btn btn-xs btn-icon btn-circle btn-warning" data-click="panel-collapse"><i class="fa fa-minus"></i></a>
 						<a href="javascript:;" class="btn btn-xs btn-icon btn-circle btn-danger" data-click="panel-remove"><i class="fa fa-times"></i></a>
 					</div>
-					<h4 class="panel-title">Basic Form Validation</h4>
+					<h4 class="panel-title">Add</h4>
 				</div>
+				{% block alert %}{% endblock %}
+
 				<div class="panel-body panel-form">
-					<form class="form-horizontal form-bordered" data-parsley-validate="true" name="demo-form">
+					<form action = "{% url 'add_vehicle' %}" class="form-horizontal form-bordered" data-parsley-validate="true" name="demo-form" method="POST">
+						{% csrf_token %}
 						<div class="form-group">
-							<label class="control-label col-md-4 col-sm-4" for="fullname">Full Name * :</label>
+							<label class="control-label col-md-4 col-sm-4" for="message">Vehicle Type :</label>
 							<div class="col-md-6 col-sm-6">
-								<input class="form-control" type="text" id="fullname" name="fullname" placeholder="Required" data-parsley-required="true" />
+								<select class="form-control" name="vehicle_type">
+									<option>Select a type</option>
+									{% for each in vehicle_types %}
+										<option value="{{each.id}}">{{each}}</option>
+									{% endfor %}
+								</select>
 							</div>
 						</div>
 						<div class="form-group">
-							<label class="control-label col-md-4 col-sm-4" for="email">Email * :</label>
+							<label class="control-label col-md-4 col-sm-4" for="brand_name">Vehicle Brand Name * :</label>
 							<div class="col-md-6 col-sm-6">
-								<input class="form-control" type="text" id="email" name="email" data-parsley-type="email" placeholder="Email" data-parsley-required="true" />
+								<input class="form-control" type="text" id="brand_name" name="brand_name" placeholder="Brand Name" data-parsley-required="true" />
 							</div>
 						</div>
 						<div class="form-group">
-							<label class="control-label col-md-4 col-sm-4" for="website">Website :</label>
+							<label class="control-label col-md-4 col-sm-4" for="brand_model">Vehicle Model * :</label>
 							<div class="col-md-6 col-sm-6">
-								<input class="form-control" type="url" id="website" name="website" data-parsley-type="url" placeholder="url" />
+								<input class="form-control" type="text" id="brand_model" name="brand_model" data-parsley-type="brand_model" placeholder="Brand Model" data-parsley-required="true" />
 							</div>
 						</div>
 						<div class="form-group">
-							<label class="control-label col-md-4 col-sm-4" for="message">Message (20 chars min, 200 max) :</label>
+							<label class="control-label col-md-4 col-sm-4" for="reg_number">Vehicle Registeration Number * :</label>
 							<div class="col-md-6 col-sm-6">
-								<textarea class="form-control" id="message" name="message" rows="4" data-parsley-range="[20,200]" placeholder="Range from 20 - 200"></textarea>
+								<input class="form-control" type="text" id="reg_number" name="reg_number" data-parsley-type="text" placeholder="Registeration Number" data-parsley-required="true" />
 							</div>
 						</div>
 						<div class="form-group">
-							<label class="control-label col-md-4 col-sm-4" for="message">Digits :</label>
+							<label class="control-label col-md-4 col-sm-4" for="year">Year :</label>
 							<div class="col-md-6 col-sm-6">
-								<input class="form-control" type="text" id="digits" name="digits" data-parsley-type="digits" placeholder="Digits" />
+								<input class="form-control" type="digits" id="year" name="year" data-parsley-type="digits" placeholder="Make Year" />
 							</div>
 						</div>
 						<div class="form-group">
-							<label class="control-label col-md-4 col-sm-4" for="message">Number :</label>
+							<label class="control-label col-md-4 col-sm-4" for="seats">Seats :</label>
 							<div class="col-md-6 col-sm-6">
-								<input class="form-control" type="text" id="number" name="number" data-parsley-type="number" placeholder="Number" />
+								<input class="form-control" type="number" id="seats" name="seats" data-parsley-type="number" placeholder=" Seat Number" />
 							</div>
 						</div>
 						<div class="form-group">
-							<label class="control-label col-md-4 col-sm-4" for="message">Phone :</label>
+							<label class="control-label col-md-4 col-sm-4" for="color">Vehicle Color * :</label>
 							<div class="col-md-6 col-sm-6">
-								<input class="form-control" type="text" id="data-phone" data-parsley-type="number" placeholder="(XXX) XXXX XXX" />
+								<input class="form-control" type="text" id="color" name="color" placeholder="Color" data-parsley-required="true" />
+							</div>
+						</div>
+						<div class="form-group">
+							<label class="control-label col-md-4 col-sm-4" for="description">Description (20 chars min, 200 max) :</label>
+							<div class="col-md-6 col-sm-6">
+								<textarea class="form-control" id="description" name="description" rows="4" data-parsley-range="[20,200]" placeholder="Range from 20 - 200"></textarea>
 							</div>
 						</div>
 						<div class="form-group">
