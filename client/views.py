@@ -1,15 +1,28 @@
 from django.contrib.auth import authenticate, login, logout
 from django.shortcuts import render
-from django.http import HttpResponse, HttpResponseRedirect
+from django.http import HttpResponse, HttpResponseRedirect, Http404
 from django.urls import reverse
-from .models import Vehicle_Type, Vehicle
+from .models import Vehicle_Type, Vehicle, Profile, Recording
+from django.contrib.auth.models import User
 
 # Create your views here.
 def index(request):
     if not request.user.is_authenticated:
         return render(request,'client/login.html',{"message":"Welcome"})
+    
+    vehicles = Vehicle.objects.all()
+    user = User.objects.get(pk=request.user.id)
+    users = Profile.objects.filter(company_id=user.profile.company_id).count()
+    recordings = Recording.objects.count()
+
+
+
     data = {
-        "user" : request.user
+        "user" : request.user,
+        "vehicles": vehicles,
+        "numvehicles": vehicles.count(),
+        "numusers": users,
+        "numrecordings": recordings,
     }
     return render(request,'client/dashboard.html',data)
 
@@ -31,12 +44,37 @@ def user_logout(request):
     logout(request)
     return render(request,'client/login.html',{"message":"Successfully Logged out"})
 
+def update_profile(request, user_id):
+    user = User.objects.get(pk=user_id)
+    user.profile.address = request.POST["address"]
+    user.profile.phone_number = request.POST["phone_number"]
+    user.profile.company = request.POST["company"]
+    user.save()
+
 def vehicles(request):
     if not request.user.is_authenticated:
         return render(request,'client/login.html',{"message":"Please Login to Continue"})
+
     data = {
         "user" : request.user,
         "vehicles": Vehicle.objects.all()
+    }
+    return render(request,'client/vehicles.html',data)
+
+def vehicle_details(request,vehicle_id):
+    if not request.user.is_authenticated:
+        return render(request,'client/login.html',{"message":"Please Login to Continue"})
+
+    if vehicle_id is not None:
+        try:
+            selected = Vehicle.objects.get(pk=vehicle_id)
+        except:
+            raise Http404("Vehicle does not exist")
+
+    data = {
+        "user" : request.user,
+        "vehicles": Vehicle.objects.all(),
+        "selected": selected
     }
     return render(request,'client/vehicles.html',data)
 
@@ -73,24 +111,58 @@ def add_vehicle(request):
 def locations(request):
     if not request.user.is_authenticated:
         return render(request,'client/login.html',{"message":"Please Login to Continue"})
+    try:
+            vehicles = Vehicle.objects.all()
+    except:
+        raise Http404("Vehicle does not exist")
+
     data = {
-        "user" : request.user
+        "user" : request.user,
+        "vehicles": vehicles
     }
     return render(request,'client/map.html',data)
 
-def live_stream(request):
+def vehicle_location(request,vehicle_id):
     if not request.user.is_authenticated:
         return render(request,'client/login.html',{"message":"Please Login to Continue"})
+
+    if vehicle_id is not None:
+        try:
+            selected = Vehicle.objects.get(pk=vehicle_id)
+        except:
+            raise Http404("Vehicle does not exist")
+
     data = {
-        "user" : request.user
+        "user" : request.user,
+        "selected": selected
+    }
+    return render(request,'client/map.html',data)
+
+def live_stream(request,vehicle_id):
+    if not request.user.is_authenticated:
+        return render(request,'client/login.html',{"message":"Please Login to Continue"})
+
+    if vehicle_id is not None:
+        try:
+            selected = Vehicle.objects.get(pk=vehicle_id)
+        except:
+            raise Http404("Vehicle does not exist")
+
+    data = {
+        "user" : request.user,
+        "selected": selected
     }
     return render(request,'client/live_stream.html',data)
 
 def recordings(request):
     if not request.user.is_authenticated:
         return render(request,'client/login.html',{"message":"Please Login to Continue"})
+
+    recordings = Recording.objects.all()
+
     data = {
-        "user" : request.user
+        "user" : request.user,
+        "recordings" : recordings
     }
     return render(request,'client/recordings.html',data)
 

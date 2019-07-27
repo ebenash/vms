@@ -12,6 +12,11 @@
 	<meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" name="viewport" />
 	<meta content="" name="description" />
 	<meta content="" name="author" />
+	<style type="text/css">
+		#map {
+          position: inherit !important;
+      	}
+  </style>
 	
 	<!-- ================== BEGIN BASE CSS STYLE ================== -->
 	<link href="http://fonts.googleapis.com/css?family=Open+Sans:300,400,600,700" rel="stylesheet">
@@ -24,6 +29,7 @@
 	<link href="{% static 'client/css/theme/default.css' %}" rel="stylesheet" id="theme" />
 	<!-- ================== END BASE CSS STYLE ================== -->
 	
+	
 	<!-- ================== BEGIN PAGE LEVEL STYLE ================== -->
 	<link href="{% static 'client/plugins/jquery-jvectormap/jquery-jvectormap-1.2.2.css' %}" rel="stylesheet" />
 	<link href="{% static 'client/plugins/bootstrap-datepicker/css/datepicker.css' %}" rel="stylesheet" />
@@ -31,7 +37,7 @@
     <link href="{% static 'client/plugins/gritter/css/jquery.gritter.css' %}" rel="stylesheet" />
     <link href="{% static 'client/plugins/DataTables/css/dataTables.bootstrap.min.css' %}" rel="stylesheet" />
     <link href="{% static 'client/plugins/DataTables/css/buttons.bootstrap.min.css' %}" rel="stylesheet" />
-	<link href="{% static 'client/plugins/DataTables/css/responsive.bootstrap.min.css' %}" rel="stylesheet" /
+	<link href="{% static 'client/plugins/DataTables/css/responsive.bootstrap.min.css' %}" rel="stylesheet" />
 	<!-- ================== END PAGE LEVEL STYLE ================== -->
 	
 	<!-- ================== BEGIN BASE JS ================== -->
@@ -46,7 +52,7 @@
 	<!-- begin #page-container -->
 	<div id="page-container" class="fade page-sidebar-fixed page-header-fixed">
 		<!-- begin #header -->
-		<div id="header" class="header navbar navbar-inverse navbar-fixed-top">
+		<div id="header" class="header navbar navbar-default navbar-fixed-top">
 			<!-- begin container-fluid -->
 			<div class="container-fluid">
 				<!-- begin mobile sidebar expand / collapse button -->
@@ -73,7 +79,13 @@
 					<li class="dropdown navbar-user">
 						<a href="javascript:;" class="dropdown-toggle" data-toggle="dropdown">
 							<img src="{% static 'client/img/user_icon.png' %}" alt="" /> 
-							<span class="hidden-xs">{{user.username}}</span> <b class="caret"></b>
+							<span class="hidden-xs">
+							{% if user.first_name != '' %}
+								{{user.first_name}} {{user.last_name}}
+							{% else %}
+								{{user.username}}
+							{% endif %}
+							</span> <b class="caret"></b>
 						</a>
 						<ul class="dropdown-menu animated fadeInLeft">
 							
@@ -111,7 +123,6 @@
 						    <li><a href="{% url 'vehicles' %}">Manage Vehicles</a></li>
 						    <li><a href="{% url 'add_vehicle' %}">Add New</a></li>
 						    <li><a href="{% url 'vehicle_locations' %}">View Locations</a></li>
-						    <li><a href="{% url 'live_streams' %}">View Live Streams</a></li>
 						</ul>
 					</li>
 					
@@ -186,8 +197,11 @@
 	<script src="{% static 'client/js/table-manage-buttons.demo.min.js' %}"></script>
 	<script src="{% static 'client/js/dashboard.min.js' %}"></script>
 	<script src="{% static 'client/js/apps.min.js' %}"></script>
-	<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDdG0zJrvzYs4Ub7h0ELbB_RbacQdKlDzQ"></script>
-	<script src="{% static 'client/js/map-google.demo.min.js' %}"></script>
+	<!--<script src="{% static 'client/js/map-google.demo.min.js' %}"></script>-->
+	<script async defer
+    src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDdG0zJrvzYs4Ub7h0ELbB_RbacQdKlDzQ&callback=initMap">
+    </script>
+	
 	<script>
 	if (sessionStorage.getItem('notifyonce') !== 'true') {
 		$.gritter.add({
@@ -212,7 +226,7 @@
 		$(document).ready(function() {
 			App.init();
 			Dashboard.init();
-			MapGoogle.init();
+			//MapGoogle.init();
 			TableManageButtons.init();
 		});
 	</script>
@@ -226,6 +240,111 @@
 	  ga('send', 'pageview');
 
 	</script>
+
+	 <script>
+      var customLabel = {
+        motorcycle: {
+          url: '{% url 'motorcycle' %}'
+        },
+        Truck: {
+          url: '{% url 'truck' %}'
+        },
+        Car: {
+          url: '{% url 'car' %}'
+        },
+        Tractor: {
+          url: '{% url 'tractor' %}'
+        },
+        Other: {
+          url: '{% url 'pin' %}'
+        }
+      };
+
+        function initMap() {
+        var map = new google.maps.Map(document.getElementById('google-map-default'), {
+          center: new google.maps.LatLng(5.608787, -0.177508),
+          zoom: 12
+        } );
+
+
+        var infoWindow = new google.maps.InfoWindow;
+        
+          {% if selected is not None %}
+          	bounds  = new google.maps.LatLngBounds();
+              var name = 'Registeration Number: {{selected.reg_number}}';
+              var address = 'Brand/Model: {{selected.brand_name}}-{{selected.brand_model}}';
+              var type = '{{selected.vehicle_type_id}}';
+              var point = new google.maps.LatLng(
+                  parseFloat((Math.random() * (5.920 - 5.6200) + 5.6200).toFixed(4)),
+		          parseFloat((Math.random() * (-0.220 + 0.0200) + -0.0200).toFixed(4)));
+
+              bounds.extend(point);
+
+              var infowincontent = document.createElement('div');
+              var strong = document.createElement('strong');
+              strong.textContent = name
+              infowincontent.appendChild(strong);
+              infowincontent.appendChild(document.createElement('br'));
+
+              var text = document.createElement('text');
+              text.textContent = address
+              infowincontent.appendChild(text);
+              var iconBase = customLabel[type] || {};
+              var marker = new google.maps.Marker({
+                map: map,
+                position: point,
+                icon: iconBase.url
+              });
+
+              map.fitBounds(bounds);
+
+              marker.addListener('click', function() {
+                infoWindow.setContent(infowincontent);
+                infoWindow.open(map, marker);
+              });
+          {% elif vehicles is not None %}
+          		{% for each in vehicles %}
+          			bounds  = new google.maps.LatLngBounds();
+		              var name = 'Registeration Number: {{each.reg_number}}';
+		              var address = 'Brand/Model: {{each.brand_name}}-{{each.brand_model}}';
+		              var type = '{{each.vehicle_type_id}}';
+		              var point = new google.maps.LatLng(
+		                  parseFloat((Math.random() * (5.920 - 5.6200) + 5.6200).toFixed(4)),
+		                  parseFloat((Math.random() * (-0.220 + 0.0200) + -0.0200).toFixed(4)));
+
+		              bounds.extend(point);
+
+		              var infowincontent = document.createElement('div');
+		              var strong = document.createElement('strong');
+		              strong.textContent = name
+		              infowincontent.appendChild(strong);
+		              infowincontent.appendChild(document.createElement('br'));
+
+		              var text = document.createElement('text');
+		              text.textContent = address
+		              infowincontent.appendChild(text);
+		              var iconBase = customLabel[type] || {};
+		              var marker = new google.maps.Marker({
+		                map: map,
+		                position: point,
+		                icon: iconBase.url
+		              });
+
+		              map.panToBounds(bounds);
+
+		              marker.addListener('click', function() {
+		                infoWindow.setContent(infowincontent);
+		                infoWindow.open(map, marker);
+		              });
+          		{% endfor %}
+          {% endif %}
+          
+        }
+
+
+
+
+    </script>
 	
 </body>
 </html>

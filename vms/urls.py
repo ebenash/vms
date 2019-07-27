@@ -21,4 +21,9 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('', include('client.urls')),
     path('favicon.ico',RedirectView.as_view(url='/static/favicon.ico')),
+    path('motorcycle.png',RedirectView.as_view(url='/static/client/img/markers/motorcycle.png'), name="motorcycle"),
+    path('tractor.png',RedirectView.as_view(url='/static/client/img/markers/tractor.png'), name="tractor"),
+    path('car.png',RedirectView.as_view(url='/static/client/img/markers/car.png'), name="car"),
+    path('truck.png',RedirectView.as_view(url='/static/client/img/markers/truck.png'), name="truck"),
+    path('pin.png',RedirectView.as_view(url='/static/client/img/markers/pin.png'), name="pin"),
 ]

@@ -81,6 +81,20 @@ DATABASES = {
     }
 }
 
+"""DATABASES = {
+    'default': {
+    'ENGINE': 'django.db.backends.mysql',
+    'NAME': 'vms_db',
+    'USER': 'root',
+    'PASSWORD': "",
+    'HOST': "localhost",
+    'PORT': "",
+    'OPTIONS': {
+        'init_command': "SET sql_mode='STRICT_TRANS_TABLES'"
+        }
+    }
+}"""
+
 
 # Password validation
 # https://docs.djangoproject.com/en/2.2/ref/settings/#auth-password-validators
