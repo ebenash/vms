@@ -1,5 +1,5 @@
 from django.contrib.auth import authenticate, login, logout
-from django.shortcuts import render
+from django.shortcuts import render, get_object_or_404
 from django.http import HttpResponse, HttpResponseRedirect, Http404
 from django.urls import reverse
 from .models import Vehicle_Type, Vehicle, Profile, Recording
@@ -12,17 +12,13 @@ def index(request):
     
     vehicles = Vehicle.objects.all()
     user = User.objects.get(pk=request.user.id)
-    users = Profile.objects.filter(company_id=user.profile.company_id).count()
-    recordings = Recording.objects.count()
-
-
 
     data = {
         "user" : request.user,
         "vehicles": vehicles,
         "numvehicles": vehicles.count(),
-        "numusers": users,
-        "numrecordings": recordings,
+        "numusers": Profile.objects.filter(company_id=user.profile.company_id).count(),
+        "numrecordings": Recording.objects.count(),
     }
     return render(request,'client/dashboard.html',data)
 
@@ -66,10 +62,11 @@ def vehicle_details(request,vehicle_id):
         return render(request,'client/login.html',{"message":"Please Login to Continue"})
 
     if vehicle_id is not None:
-        try:
+        selected = get_object_or_404(Vehicle,pk=vehicle_id)
+        """try:
             selected = Vehicle.objects.get(pk=vehicle_id)
-        except:
-            raise Http404("Vehicle does not exist")
+        except Vehicle.DoesNotExist :
+            raise Http404("Vehicle does not exist")"""
 
     data = {
         "user" : request.user,
@@ -111,14 +108,10 @@ def add_vehicle(request):
 def locations(request):
     if not request.user.is_authenticated:
         return render(request,'client/login.html',{"message":"Please Login to Continue"})
-    try:
-            vehicles = Vehicle.objects.all()
-    except:
-        raise Http404("Vehicle does not exist")
 
     data = {
         "user" : request.user,
-        "vehicles": vehicles
+        "vehicles": Vehicle.objects.all()
     }
     return render(request,'client/map.html',data)
 
@@ -127,10 +120,7 @@ def vehicle_location(request,vehicle_id):
         return render(request,'client/login.html',{"message":"Please Login to Continue"})
 
     if vehicle_id is not None:
-        try:
-            selected = Vehicle.objects.get(pk=vehicle_id)
-        except:
-            raise Http404("Vehicle does not exist")
+        selected = get_object_or_404(Vehicle,pk=vehicle_id)
 
     data = {
         "user" : request.user,
@@ -143,10 +133,7 @@ def live_stream(request,vehicle_id):
         return render(request,'client/login.html',{"message":"Please Login to Continue"})
 
     if vehicle_id is not None:
-        try:
-            selected = Vehicle.objects.get(pk=vehicle_id)
-        except:
-            raise Http404("Vehicle does not exist")
+        selected = get_object_or_404(Vehicle,pk=vehicle_id)
 
     data = {
         "user" : request.user,
@@ -158,11 +145,9 @@ def recordings(request):
     if not request.user.is_authenticated:
         return render(request,'client/login.html',{"message":"Please Login to Continue"})
 
-    recordings = Recording.objects.all()
-
     data = {
         "user" : request.user,
-        "recordings" : recordings
+        "recordings" : Recording.objects.all()
     }
     return render(request,'client/recordings.html',data)
 
