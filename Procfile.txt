@@ -1,1 +1,1 @@
-<process type>: <command>
+web: gunicorn gettingstarted.wsgi --log-file -
