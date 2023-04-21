@@ -3,5 +3,5 @@ gunicorn==19.9.0
 mysqlclient==1.4.2.post1
 PyMySQL==0.9.3
 pytz==2019.1
-sqlparse==0.3.0
+sqlparse==0.4.4
 whitenoise==4.1.3
